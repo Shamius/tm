@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Перед обучением: как у тебя сейчас со временем?</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--text:#18324d;--muted:#5a728a;--accent:#1f6feb;--soft:#eaf2ff;--border:#d9e4f0;--shadow:0 12px 30px rgba(18,44,74,.08);--radius:18px}
+*{box-sizing:border-box}body{margin:0;font-family:Calibri,Arial,sans-serif;background:linear-gradient(180deg,#f6f9fc 0,#eef4fb 100%);color:var(--text)}
+.page{width:min(920px,calc(100vw - 32px));margin:32px auto 40px}.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.hero,.box{padding:24px}.hero{margin-bottom:18px}h1{margin:0 0 12px;font-size:clamp(28px,5vw,40px);line-height:1.08}.subtitle{margin:0;color:var(--muted);font-size:18px;line-height:1.5;max-width:760px}
+.small{margin-top:12px;color:var(--muted);font-size:14px}.hidden{display:none!important}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;color:var(--muted);font-size:15px;margin-bottom:14px}
+.progress{width:100%;height:10px;background:#edf2f8;border-radius:999px;overflow:hidden;margin:10px 0 2px}.bar{height:100%;width:0;background:linear-gradient(90deg,#6ea8fe,var(--accent));transition:width .25s ease}
+.tag{display:inline-block;padding:6px 10px;border-radius:999px;background:var(--soft);color:var(--accent);font-size:14px;margin-bottom:14px}.type{color:var(--muted);font-size:14px;margin-bottom:10px}
+.q{margin:0 0 14px;font-size:clamp(22px,3.4vw,30px);line-height:1.2}.help{margin:0 0 18px;color:var(--muted);font-size:16px;line-height:1.45}.options{display:grid;gap:12px}
+.option{border:1px solid var(--border);border-radius:14px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;transition:.15s;background:#fff}.option:hover{border-color:#a7c5eb;transform:translateY(-1px);background:#fbfdff}.option.sel{border-color:var(--accent);background:var(--soft)}
+.option input{margin-top:2px;transform:scale(1.15);accent-color:var(--accent)}.option span{font-size:17px;line-height:1.45}textarea{width:100%;min-height:160px;resize:vertical;border:1px solid var(--border);border-radius:14px;padding:14px 16px;font:inherit;color:var(--text);background:#fff;line-height:1.45}
+textarea:focus{outline:2px solid rgba(31,111,235,.14);border-color:var(--accent)}.controls{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:22px}button{border:0;border-radius:12px;padding:13px 18px;font:inherit;font-size:16px;cursor:pointer;transition:.12s}button:hover{transform:translateY(-1px)}button:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.primary{background:var(--accent);color:#fff;min-width:180px}.secondary{background:#eef3f8;color:var(--text)}.ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}.settings{margin-top:18px;padding-top:18px;border-top:1px solid var(--border);display:grid;gap:12px}.check{display:flex;gap:10px;align-items:flex-start;color:var(--text);font-size:16px}
+.kpi{display:grid;gap:14px}.pill{border:1px solid var(--border);border-radius:14px;padding:16px;background:#fbfdff}.pill h3{margin:0 0 8px;font-size:21px}.pill p{margin:0;color:var(--muted);line-height:1.5}.grid{display:grid;gap:14px;margin-top:18px}.result h2{margin:0 0 10px;font-size:30px}.result p{margin:0 0 12px;line-height:1.55}.list{display:grid;gap:10px;margin-top:10px}.ans{border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:#fff}.ans strong{display:block;margin-bottom:6px}.muted{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="page">
+  <section class="card hero" id="start">
+    <h1>Перед обучением: как у тебя сейчас со временем?</h1>
+    <p class="subtitle">Это не экзамен, а короткая входная диагностика. Она помогает понять, где сейчас сильнее запрос: спокойствие, своё время, фокус или ясность.</p>
+    <div class="small">В основе — логика материалов канала про управление временем: меньше гонки, больше своего времени, меньше суеты, больше ясности.</div>
+    <div class="settings">
+      <label class="check"><input type="checkbox" id="shuffle" checked> <span>Перемешать вопросы перед началом</span></label>
+      <label class="check"><input type="checkbox" id="opens" checked> <span>Показать мои ответы на открытые вопросы в финале</span></label>
+    </div>
+    <div class="controls"><span></span><button class="primary" id="startBtn">Начать</button></div>
+  </section>
+
+  <section class="card box hidden" id="quiz">
+    <div class="top"><div id="progressText"></div><div id="typeText"></div></div>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div class="tag" id="tag"></div>
+    <h2 class="q" id="prompt"></h2>
+    <p class="help" id="help"></p>
+    <div id="body"></div>
+    <div class="controls">
+      <button class="ghost" id="backBtn">Назад</button>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button class="secondary" id="skipBtn">Пропустить</button>
+        <button class="primary" id="nextBtn">Дальше</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card box result hidden" id="result">
+    <h2>Твой входной профиль</h2>
+    <p id="lead"></p>
+    <div class="kpi" id="profile"></div>
+    <div class="grid">
+      <div class="pill"><h3 id="logicTitle"></h3><p id="logicText"></p></div>
+      <div class="pill"><h3>Что с этим делать на старте</h3><p id="nextText"></p></div>
+    </div>
+    <div id="openWrap" class="grid hidden">
+      <div class="pill">
+        <h3>Твои открытые ответы</h3>
+        <div class="list" id="openList"></div>
+      </div>
+    </div>
+    <div class="controls"><span></span><button class="primary" id="restartBtn">Пройти заново</button></div>
+  </section>
+</div>
+<script>
+const KEY='tm-pretest-v1';
+const QUESTIONS=[
+{id:'need',tag:'Запрос',type:'single',prompt:'Что тебе сейчас нужнее всего получить от темы управления временем?',help:'Выбери то, что откликается сильнее всего именно сейчас.',options:[['Больше спокойствия и меньше внутренней гонки',{calm:3}],['Больше своего времени и меньше расползания дня',{boundaries:3}],['Меньше суеты и постоянных переключений',{focus:3}],['Больше ясности: что главное, а что можно отложить',{clarity:3}]]},
+{id:'signs',tag:'Состояние',type:'multi',prompt:'По каким признакам ты обычно понимаешь, что контроль над временем начинает ускользать?',help:'Можно выбрать несколько вариантов.',options:[['Чувствую тревогу или постоянное внутреннее напряжение',{calm:2}],['Мой день заполняют чужие просьбы и внезапные включения',{boundaries:2}],['Прыгаю между задачами и к концу дня не понимаю, что сделал важного',{focus:2}],['Мне трудно назвать, что сегодня действительно было главным',{clarity:2}],['Личного времени почти не остаётся',{boundaries:2,calm:1}]]},
+{id:'eaters',tag:'Открытый вопрос',type:'open',prompt:'Что чаще всего «съедает» твой день?',help:'Напиши так, как есть: встречи, сообщения, чужие задачи, тревога, отсутствие приоритетов — или что-то другое.'},
+{id:'startlogic',tag:'Ситуация',type:'single',prompt:'Представь: ты уже перегружен и хочешь быстро навести порядок. С чего разумнее начать?',help:'Здесь нет подвоха — просто выбери самый здравый первый ход.',options:[['Взять один простой и посильный способ на неделю, а не пытаться перестроить всё сразу',{calm:1,clarity:1},1],['За один день полностью переписать всю систему жизни и работы',{},0],['Сначала собрать как можно больше теории, а пробовать потом',{},0],['Параллельно начать пять–семь новых практик, чтобы наверняка сработало',{},0]]},
+{id:'formats',tag:'Логика обучения',type:'multi',prompt:'Что делает обучение по управлению временем более рабочим и живым?',help:'Выбери всё, что кажется тебе полезным.',options:[['Возможность выбирать тему или инструмент под свой текущий запрос',{clarity:1},1],['Небольшие посильные шаги вместо громоздких реформ',{calm:1},1],['Мягкие напоминания и поддержка по ходу пути',{calm:1},1],['Возможность спрашивать совета и делиться результатами с другими',{boundaries:1},1],['Максимальное давление на старте, чтобы сразу всех встряхнуть',{},0]]},
+{id:'own',tag:'Открытый вопрос',type:'open',prompt:'Что для тебя означает «вернуть себе своё время»?',help:'Лучше конкретно. Например: час без сообщений, спокойный вечер, время на спорт, чтение, семью, обучение или просто тишину.'},
+{id:'repeat',tag:'Ситуация',type:'single',prompt:'Ты попробовал новый способ, но толком его не освоил за неделю. Что разумнее?',help:'Выбери тот вариант, который кажется тебе наиболее зрелым.',options:[['Можно оставить этот же способ ещё на один цикл и прокачать его лучше',{clarity:1,focus:1},1],['Надо обязательно взять новый способ: возвращаться назад — значит проигрывать',{},0],['Вообще лучше ничего не менять: если сразу не пошло, значит не твоё',{},0],['Надо одновременно взять старый и ещё три новых, чтобы компенсировать результат',{},0]]},
+{id:'focus',tag:'Фокус',type:'multi',prompt:'Что обычно действительно помогает удерживать фокус на результате?',help:'Можно выбрать несколько вариантов.',options:[['Назвать 2–3 главных фокуса на день или неделю',{focus:2,clarity:1},1],['Заранее определить анти-фокусы: на что я сознательно не иду',{focus:2,boundaries:1},1],['Выходить со встречи, если стало ясно, что я больше не добавляю пользы',{boundaries:2,focus:1},1],['Стараться немедленно отвечать на всё входящее, чтобы ничего не висело',{},0],['Брать на себя чужие задачи, если можно помочь',{boundaries:1},0]]},
+{id:'bound',tag:'Открытый вопрос',type:'open',prompt:'Какую чужую задачу, просьбу или формат включения тебе труднее всего не брать на себя?',help:'Подумай о том, где твои границы обычно проседают сильнее всего.'},
+{id:'meeting',tag:'Ситуация',type:'single',prompt:'Когда уместно выйти со встречи?',help:'Выбери самый здравый вариант.',options:[['Как только становится ясно, что я больше не добавляю пользы и моё присутствие не обязательно',{boundaries:2,focus:1},1],['Никогда: лучше досидеть, даже если тема давно не про меня',{},0],['Только если уже очень скучно',{},0],['Только если кто-то старше по должности разрешит лично',{},0]]},
+{id:'priority',tag:'Ясность',type:'single',prompt:'Какое из утверждений ближе к здравой логике управления временем?',help:'Не ищи «идеальный» ответ. Смотри на то, что помогает в реальной жизни.',options:[['Чтобы вернуть себе время, нужно чётко понимать, что для тебя главное, и признавать неизбежность выборов и компромиссов',{clarity:3},1],['Если всё организовать идеально, можно обойтись вообще без компромиссов',{},0],['Главное — просто ускориться; вопрос приоритетов вторичен',{},0],['Лучше держать все задачи одинаково важными, чтобы ничего не упустить',{},0]]},
+{id:'step',tag:'Открытый вопрос',type:'open',prompt:'Какой один маленький шаг ты готов протестировать уже в первую неделю?',help:'Один. Небольшой. Реалистичный. Такой, который не требует геройства.'}
+];
+const PROFILE={calm:['Запрос на спокойствие','Тебе сейчас важнее всего снизить внутреннюю гонку и вернуть ощущение опоры. Для тебя особенно полезны короткие, посильные практики, а не большие реформы.'],boundaries:['Запрос на границы','Похоже, время утекает прежде всего через чужие задачи, встречи и внешние включения. Твоё сильное место роста — аккуратные границы и возврат права распоряжаться своим днём.'],focus:['Запрос на фокус','Главная боль сейчас — распыление внимания, суета и переключения. Полезнее всего будут инструменты, которые уменьшают текучку и помогают удерживать 2–3 главных направления.'],clarity:['Запрос на ясность','Тебе может не хватать не силы воли, а ясной рамки: что главное, что вторично и чем сегодня осознанно жертвовать. Для тебя особенно ценны практики про приоритеты и выбор.']};
+const LOGIC=[[2,'Пока больше интуитивных движений, чем рабочей системы.','Похоже, есть риск пытаться решить перегруз слишком резко: через скачок, давление или чрезмерный размах. Здесь особенно поможет принцип «один посильный шаг за раз».'],[5,'Логика старта уже вполне здравая.','Ты, похоже, интуитивно выбираешь рабочий путь: небольшие шаги, повторение полезного инструмента, внимание к границам и поддержке.'],[99,'У тебя уже есть хорошая базовая логика управления временем.','Скорее всего, ты понимаешь, что не всё решается ускорением. Здесь обучение может быть не про «открытие Америки», а про настройку и закрепление сильных ходов.']];
+let state={order:[],answers:{},i:0,showOpen:true};
+const $=s=>document.querySelector(s), start=$('#start'), quiz=$('#quiz'), result=$('#result'), body=$('#body');
+function save(){localStorage.setItem(KEY,JSON.stringify(state))} function clearSaved(){localStorage.removeItem(KEY)}
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function current(){return QUESTIONS.find(q=>q.id===state.order[state.i])}
+function markSelected(){document.querySelectorAll('.option').forEach(el=>{let q=current(),a=state.answers[q.id];let val=el.dataset.v;if(q.type==='single'){el.classList.toggle('sel',a===+val)}else{el.classList.toggle('sel',Array.isArray(a)&&a.includes(+val))}})}
+function render(){let q=current(); $('#progressText').textContent=`Вопрос ${state.i+1} из ${state.order.length}`; $('#typeText').textContent=q.type==='open'?'Открытый вопрос':q.type==='multi'?'Несколько вариантов':'Один вариант'; $('#bar').style.width=((state.i+1)/state.order.length*100)+'%'; $('#tag').textContent=q.tag; $('#prompt').textContent=q.prompt; $('#help').textContent=q.help||''; body.innerHTML='';
+ if(q.type==='open'){let ta=document.createElement('textarea'); ta.placeholder='Твой ответ'; ta.value=state.answers[q.id]||''; ta.addEventListener('input',e=>{state.answers[q.id]=e.target.value;save()}); body.appendChild(ta)} else {let wrap=document.createElement('div'); wrap.className='options'; q.options.forEach((opt,idx)=>{let lab=document.createElement('label'); lab.className='option'; lab.dataset.v=idx; let inp=document.createElement('input'); inp.type=q.type==='single'?'radio':'checkbox'; inp.name='q'; inp.checked=q.type==='single'?state.answers[q.id]===idx:Array.isArray(state.answers[q.id])&&state.answers[q.id].includes(idx); inp.addEventListener('change',()=>{if(q.type==='single'){state.answers[q.id]=idx}else{let arr=Array.isArray(state.answers[q.id])?[...state.answers[q.id]]:[]; inp.checked?arr.push(idx):arr=arr.filter(x=>x!==idx); state.answers[q.id]=arr} save(); markSelected()}); let span=document.createElement('span'); span.textContent=opt[0]; lab.append(inp,span); wrap.appendChild(lab)}); body.appendChild(wrap); setTimeout(markSelected,0)}
+ $('#backBtn').disabled=state.i===0; $('#nextBtn').textContent=state.i===state.order.length-1?'Показать результат':'Дальше'; }
+function startQuiz(){state={order:($('#shuffle').checked?shuffle(QUESTIONS.map(q=>q.id)):QUESTIONS.map(q=>q.id)),answers:{},i:0,showOpen:$('#opens').checked}; save(); start.classList.add('hidden'); result.classList.add('hidden'); quiz.classList.remove('hidden'); render()}
+function next(skip=false){let q=current(); if(skip){delete state.answers[q.id]} if(state.i<state.order.length-1){state.i++; save(); render()} else finish()}
+function finish(){let score={calm:0,boundaries:0,focus:0,clarity:0}, logic=0; QUESTIONS.forEach(q=>{let ans=state.answers[q.id]; if(q.type==='single' && Number.isInteger(ans)){let opt=q.options[ans]; Object.entries(opt[1]||{}).forEach(([k,v])=>score[k]+=v); logic+=(opt[2]||0)} if(q.type==='multi' && Array.isArray(ans)){ans.forEach(i=>{let opt=q.options[i]; Object.entries(opt[1]||{}).forEach(([k,v])=>score[k]+=v); logic+=(opt[2]||0)})} }); let sorted=Object.entries(score).sort((a,b)=>b[1]-a[1]); let top=sorted[0][0], second=sorted[1][0]; let p1=PROFILE[top], p2=PROFILE[second]; $('#lead').textContent='Ниже — не ярлык, а рабочая гипотеза о том, с чем тебе полезнее входить в обучение прямо сейчас.'; let profile=$('#profile'); profile.innerHTML=''; [p1,p2].forEach((p,n)=>{let d=document.createElement('div'); d.className='pill'; d.innerHTML=`<h3>${n===0?'Главный вектор: ':'Второй вектор: '}${p[0]}</h3><p>${p[1]}</p>`; profile.appendChild(d)}); let lf=LOGIC.find(x=>logic<=x[0]); $('#logicTitle').textContent=lf[1]; $('#logicText').textContent=lf[2]; $('#nextText').textContent={calm:'Тебе лучше заходить в обучение через маленькие и лёгкие практики, которые снижают напряжение и не создают новую гонку.',boundaries:'Тебе полезно смотреть прежде всего на границы: встречи, чужие задачи, быстрые просьбы и право говорить «не сейчас».',focus:'Тебе стоит опираться на инструменты против суеты: меньше переключений, больше осознанного выбора, что действительно главное.',clarity:'Тебе особенно зайдут практики, которые помогают отделять важное от срочного и заранее признавать цену своих выборов.'}[top];
+ let openWrap=$('#openWrap'), openList=$('#openList'); openList.innerHTML=''; if(state.showOpen){QUESTIONS.filter(q=>q.type==='open').forEach(q=>{let txt=(state.answers[q.id]||'').trim(); if(!txt) return; let d=document.createElement('div'); d.className='ans'; d.innerHTML=`<strong>${q.prompt}</strong><div class='muted'>${txt.replace(/[<>&]/g,s=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[s]))}</div>`; openList.appendChild(d)}); openWrap.classList.toggle('hidden',!openList.children.length)} else openWrap.classList.add('hidden');
+ clearSaved(); quiz.classList.add('hidden'); start.classList.add('hidden'); result.classList.remove('hidden') }
+$('#startBtn').onclick=startQuiz; $('#backBtn').onclick=()=>{if(state.i>0){state.i--;save();render()}}; $('#skipBtn').onclick=()=>next(true); $('#nextBtn').onclick=()=>next(false); $('#restartBtn').onclick=()=>{start.classList.remove('hidden'); quiz.classList.add('hidden'); result.classList.add('hidden'); clearSaved()};
+window.addEventListener('load',()=>{try{let raw=localStorage.getItem(KEY); if(!raw) return; let saved=JSON.parse(raw); if(saved&&Array.isArray(saved.order)){state=saved; start.classList.add('hidden'); result.classList.add('hidden'); quiz.classList.remove('hidden'); render()}}catch(e){}})
+</script>
+</body>
+</html>
